@@ -110,4 +110,51 @@ student.get("/student/img", auth, async (req, res) => {
   }
 });
 
+// update display image
+
+student.patch("studentss/image", auth, async (req, res) => {
+  const updates = Object.keys(sharp(req.file.buffer));
+  const allowedUpdates = ["file"];
+  const isValidOperation = updates.every((update) =>
+    allowedUpdates.includes(update)
+  );
+  if (!isValidOperation) {
+    return res.status(400).send({ error: "Invalid Updates!" });
+  }
+  try {
+    const _id = req.query.stuId;
+    const student = await Student.findById(req.query.stuId);
+    updates.forEach((update) => (student[update] = req.file.buffer[update]));
+    await student.save();
+
+    if (!student) {
+      return res.status(404).send();
+    }
+    res.send(student);
+  } catch (e) {
+    res.status(400).send(e);
+  }
+});
+
+student.patch("/student/:id", auth, upload.single("file"), async (req, res) => {
+  try {
+    const pictures = await sharp(req.file.buffer)
+      .resize({ width: 250, height: 250 })
+      .png()
+      .toBuffer();
+    const _id = req.params.id;
+    const hospitalsinfo = await Student.findByIdAndUpdate(
+      req.params.id,
+
+      (pictures.avatar = pictures),
+
+      { new: true }
+    );
+
+    res.status(200).send(hospitalsinfo);
+  } catch (error) {
+    res.status(400).send(error.message);
+  }
+});
+
 module.exports = student;

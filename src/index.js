@@ -5,6 +5,7 @@ dotenv.config();
 
 const UserRouter = require("./routes/user");
 const StudentRouter = require("./routes/student");
+const EmployeeRouter = require("./routes/employe");
 
 var app = express();
 
@@ -19,6 +20,7 @@ app.use(express.json());
 // user route
 app.use(UserRouter);
 app.use(StudentRouter);
+app.use(EmployeeRouter);
 
 app.get("/", function (req, res) {
   res.send("Hello World!");
